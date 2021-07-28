@@ -999,6 +999,7 @@ export default Component.extend({
 
     extraButtons(toolbar) {
       toolbar.addButton({
+        tabindex: "0",
         id: "quote",
         group: "fontStyles",
         icon: "far-comment",

@@ -1,0 +1,13 @@
+{{#if (has-block)}}
+  <button type="button" {{action selectKit.deselect item}} class="btn btn-default selected-choice">
+    {{d-icon "times"}}
+    {{yield}}
+  </button>
+{{else}}
+  {{d-button
+    icon="times"
+    translatedLabel=translatedLabel
+    class="selected-choice"
+    action=(action selectKit.deselect item)
+  }}
+{{/if}}

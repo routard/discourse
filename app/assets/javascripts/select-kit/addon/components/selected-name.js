@@ -1,4 +1,4 @@
-import { action, computed, get } from "@ember/object";
+import { computed, get } from "@ember/object";
 import Component from "@ember/component";
 import UtilsMixin from "select-kit/mixins/utils";
 import layout from "select-kit/templates/components/selected-name";
@@ -13,14 +13,6 @@ export default Component.extend(UtilsMixin, {
   headerTitle: null,
   headerLang: null,
   headerLabel: null,
-
-  @action
-  onSelectedNameClick() {
-    if (this.selectKit.options.clearOnClick) {
-      this.selectKit.deselect(this.item);
-      return false;
-    }
-  },
 
   didReceiveAttrs() {
     this._super(...arguments);
