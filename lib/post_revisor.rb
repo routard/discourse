@@ -70,8 +70,14 @@ class PostRevisor
   # Fields we want to record revisions for by default
   %i{title archetype}.each do |field|
     track_topic_field(field) do |tc, attribute|
-      tc.record_change(field, tc.topic.public_send(field), attribute)
-      tc.topic.public_send("#{field}=", attribute)
+      its_title_with_url = field == :title && UrlHelper.contains_url?(attribute)
+      if its_title_with_url && !tc.guardian.can_put_urls_in_topic_title?
+        tc.topic.errors.add(:base, I18n.t("urls_in_title_require_trust_level"))
+        tc.check_result(false)
+      else
+        tc.record_change(field, tc.topic.public_send(field), attribute)
+        tc.topic.public_send("#{field}=", attribute)
+      end
     end
   end
 

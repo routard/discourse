@@ -318,11 +318,6 @@ class TopicsController < ApplicationController
     topic = Topic.find_by(id: params[:topic_id])
     guardian.ensure_can_edit!(topic)
 
-    if UrlHelper.contains_url?(params[:title]) && !guardian.can_put_urls_in_topic_title?
-      message = :urls_in_title_require_trust_level
-      raise Discourse::InvalidAccess.new(message, nil, custom_message: message)
-    end
-
     if params[:category_id] && (params[:category_id].to_i != topic.category_id.to_i)
       if topic.shared_draft
         topic.shared_draft.update(category_id: params[:category_id])

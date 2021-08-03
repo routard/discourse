@@ -1662,7 +1662,7 @@ RSpec.describe TopicsController do
         Fabricate(:post, topic: topic)
         put "/t/#{topic.slug}/#{topic.id}.json", params: { title: title_with_url }
 
-        expect(response.status).to eq(403)
+        expect(response.status).to eq(422)
         expect(response.body).to include(I18n.t('urls_in_title_require_trust_level'))
       end
 
