@@ -35,6 +35,10 @@
 
   <%- if include_crawler_content? %>
 
+  <h1>
+    Il y a <%= render_topic_title(@topic_view.topic) %> posts (show.html.erb)
+  </h1>
+
   <% @topic_view.posts.each_with_index do |post, idx| %>
     <% if (u = post.user) %>
       <div itemscope itemtype='http://schema.org/DiscussionForumPosting' class='topic-body crawler-post'>
@@ -118,6 +122,10 @@
       </div>
     <% end %>
   <% end %>
+
+  <h1>
+    Il y a <%= render_topic_title(@topic_view.topic) %> posts (show.html.erb)
+  </h1>
 
   <h1>
     Il y a <%= render_topic_title(@topic_view.topic) %> posts (show.html.erb)
