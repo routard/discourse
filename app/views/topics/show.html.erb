@@ -119,7 +119,10 @@
     <% end %>
   <% end %>
 
-  <h1>Il y a <% @topic_view.max_post %> posts</h1>
+  <h1>
+    Il y a <%= render_topic_title(@topic_view.topic) %> posts (show.html.erb)
+  </h1>
+
   <% if @topic_view.prev_page || @topic_view.next_page %>
     <div role='navigation' itemscope itemtype='http://schema.org/SiteNavigationElement' class="topic-body crawler-post">
       <% if @topic_view.prev_page %>
