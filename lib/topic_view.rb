@@ -177,6 +177,10 @@ class TopicView
     "#{relative_url}?page=#{next_page}"
   end
 
+  def max_post
+    last_post.post_number
+  end
+
   def absolute_url
     "#{Discourse.base_url_no_prefix}#{relative_url}"
   end
