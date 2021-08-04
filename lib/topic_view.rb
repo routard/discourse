@@ -4,25 +4,6 @@ class TopicView
   MEGA_TOPIC_POSTS_COUNT = 10000
   MIN_POST_READ_TIME = 4.0
 
-  def self.on_preload(&blk)
-    (@preload ||= Set.new) << blk
-  end
-
-  def self.cancel_preload(&blk)
-    if @preload
-      @preload.delete blk
-      if @preload.length == 0
-        @preload = nil
-      end
-    end
-  end
-
-  def self.preload(topic_view)
-    if @preload
-      @preload.each { |preload| preload.call(topic_view) }
-    end
-  end
-
   attr_reader(
     :topic,
     :posts,
@@ -125,8 +106,6 @@ class TopicView
       end
     end
 
-    TopicView.preload(self)
-
     @draft_key = @topic.draft_key
     @draft_sequence = DraftSequence.current(@user, @draft_key)
 
@@ -178,7 +157,7 @@ class TopicView
     @page > 1 && posts.size > 0 ? @page - 1 : nil
   end
 
-  def next_page
+  def next_page # last_post.post_number seem cool
     @next_page ||= begin
       if last_post && highest_post_number && (highest_post_number > last_post.post_number)
         @page + 1
@@ -196,6 +175,10 @@ class TopicView
 
   def next_page_path
     "#{relative_url}?page=#{next_page}"
+  end
+
+  def max_post
+    last_post.post_number
   end
 
   def absolute_url
@@ -395,14 +378,13 @@ class TopicView
     @topic.bookmarks.exists?(user_id: @user.id)
   end
 
-  def bookmarked_posts
-    return nil unless has_bookmarks?
-    @topic.bookmarks.where(user: @user).pluck(:post_id, :reminder_at).map do |post_id, reminder_at|
-      {
-        post_id: post_id,
-        reminder_at: reminder_at
-      }
-    end
+  def first_post_bookmark_reminder_at
+    @first_post_bookmark_reminder_at ||= \
+      begin
+        first_post = @topic.posts.with_deleted.find_by(post_number: 1)
+        return if !first_post
+        first_post.bookmarks.where(user: @user).pluck_first(:reminder_at)
+      end
   end
 
   MAX_PARTICIPANTS = 24
@@ -510,8 +492,7 @@ class TopicView
           reviewable_scores s ON reviewable_id = r.id
         WHERE
           r.target_id IN (:post_ids) AND
-          r.target_type = 'Post' AND
-          COALESCE(s.reason, '') != 'category'
+          r.target_type = 'Post'
         GROUP BY
           target_id
       SQL
@@ -608,7 +589,7 @@ class TopicView
       columns = [:id]
 
       if !is_mega_topic?
-        columns << '(EXTRACT(EPOCH FROM CURRENT_TIMESTAMP - posts.created_at) / 86400)::INT AS days_ago'
+        columns << 'EXTRACT(DAYS FROM CURRENT_TIMESTAMP - posts.created_at)::INT AS days_ago'
       end
 
       posts.pluck(*columns)
@@ -749,15 +730,9 @@ class TopicView
   end
 
   def filter_posts_by_ids(post_ids)
+    # TODO: Sort might be off
     @posts = Post.where(id: post_ids, topic_id: @topic.id)
-      .includes(
-        { user: :primary_group },
-        :reply_to_user,
-        :deleted_by,
-        :incoming_email,
-        :topic,
-        :image_upload
-      )
+      .includes({ user: :primary_group }, :reply_to_user, :deleted_by, :incoming_email, :topic)
       .order('sort_order')
     @posts = filter_post_types(@posts)
     @posts = @posts.with_deleted if @guardian.can_see_deleted_posts?(@topic.category)

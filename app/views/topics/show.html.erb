@@ -62,7 +62,7 @@
           <link itemprop="mainEntityOfPage" href="<%= post.topic.url %>">
 
           <% if post.image_url %>
-            <link itemprop="image" href="<%= post.image_url %>">
+            <link itemprop="image" href="<%= Discourse.base_url %><%= post.image_url %>">
           <% end %>
 
           <span class="crawler-post-infos">
@@ -119,6 +119,7 @@
     <% end %>
   <% end %>
 
+  <h1>Il y a <% @topic_view.max_post %> posts</h1>
   <% if @topic_view.prev_page || @topic_view.next_page %>
     <div role='navigation' itemscope itemtype='http://schema.org/SiteNavigationElement' class="topic-body crawler-post">
       <% if @topic_view.prev_page %>

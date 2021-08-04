@@ -575,7 +575,7 @@ class BulkImport::DiscourseMerger < BulkImport::Base
     user_action
   end
 
-  def process_tag_group(tag_group)
+  def process_tag_group(tag_group) ####
     tag_group['parent_tag_id'] = tag_id_from_imported_id(tag_group['parent_tag_id']) if tag_group['parent_tag_id']
     tag_group
   end
