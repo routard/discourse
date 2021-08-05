@@ -31,7 +31,6 @@
   Il y a <%= render_topic_title(@topic_view.topic) %> posts (plain.html.erb)
 </h1>
 <div>test</div>
-<div><% render_topic_title(@topic_view.topic) posts plain %></div>
 <p>
   <% if @topic_view.prev_page %>
     <%= link_to t(:prev_page), @topic_view.prev_page_path, rel: 'prev' %>
