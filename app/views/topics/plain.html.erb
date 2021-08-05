@@ -27,10 +27,10 @@
     <hr/>
   <% end %>
 <% end %>
-<h1>
-  Il y a <%= render_topic_title(@topic_view.topic) %> posts (plain.html.erb)
-</h1>
-<div>test</div>
+<div>
+  Il y a <%= @topic_view.max_post %> posts (plain.html.erb)
+</div>
+
 <p>
   <% if @topic_view.prev_page %>
     <%= link_to t(:prev_page), @topic_view.prev_page_path, rel: 'prev' %>
